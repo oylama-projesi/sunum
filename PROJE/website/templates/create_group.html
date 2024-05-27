@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Grup Oluştur{% endblock %}
+{% block content %}
+<h3 align="center">Grup Oluştur</h3>
+{% if user.is_authenticated %}
+<p>Hoş geldiniz, {{ user.first_name }}!</p>
+{% endif %}
+<form method="POST" action="{{ url_for('views.create_group') }}">
+  {{ form.hidden_tag() }}
+  <div class="form-group">
+      <label for="name">Grup Adı</label>
+      {{ form.name(class="form-control") }}
+  </div>
+  <div id="group_members">
+      <div class="member-group form-group d-flex align-items-center">
+          <input type="email" name="emails" class="form-control flex-grow-1" placeholder="Üye Email 1" required>
+          
+      </div>
+  </div>
+  <button type="button" class="btn btn-primary" onclick="addMember()">Üye Ekle</button>
+  <br><br>
+  <button type="submit" class="btn btn-primary">Grup Oluştur</button>
+  <br><br>
+</form>
+
+<script>
+  function addMember() {
+      const groupMembers = document.getElementById('group_members');
+      const memberGroup = document.createElement('div');
+      memberGroup.className = 'member-group form-group d-flex align-items-center';
+
+      const index = groupMembers.getElementsByClassName('member-group').length + 1;
+
+      const input = document.createElement('input');
+      input.type = 'email';
+      input.name = 'emails';
+      input.className = 'form-control flex-grow-1';
+      input.placeholder = `Üye Email ${index}`;
+      input.required = true;
+
+      const removeButton = document.createElement('button');
+      removeButton.type = 'button';
+      removeButton.className = 'btn btn-outline-danger remove-member ml-2';
+      removeButton.innerHTML = '<i class="fa fa-trash"></i>';
+      removeButton.onclick = function() {
+          groupMembers.removeChild(memberGroup);
+          // Üyelerin sırasını güncelle
+          const memberGroups = groupMembers.getElementsByClassName('member-group');
+          for (let i = 0; i < memberGroups.length; i++) {
+              memberGroups[i].getElementsByTagName('input')[0].placeholder = `Üye Email ${i + 1}`;
+          }
+      };
+
+      memberGroup.appendChild(input);
+      memberGroup.appendChild(removeButton);
+
+      groupMembers.appendChild(memberGroup);
+  }
+</script>
+{% endblock %}
